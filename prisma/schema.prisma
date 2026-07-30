@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User{
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  password String
+  role UserRole @default(RESPONDER)
+  incidentsCeated Incident[] @relation("IncidentCreator")
+  assignments IncidentAssignment[]
+  messages Message[]
+  createdAt DateTime @default(now())
+}
+
+enum UserRole{
+  ADMIN
+  RESPONDER
+  VIEWER
+}
+
+model Service{
+  id String @id @default(cuid())
+  name String
+  description String?
+  status ServiceStatus @default(OPERATIONAL)
+  incidents Incident[]
+  createdAt DateTime @default(now())
+}
+
+enum ServiceStatus{
+  OPERATIONAL
+  DEGRADED
+  DOWN
+}
+
+model Incident{
+  id String @id @default(cuid())
+  title String
+  description String
+  severity IncidentSeverity
+  status IncidentStatus @default(OPEN)
+  
+  serviceId String
+  service Service @relation(fields: [serviceId], references: [id])
+
+  createdById String
+  createdBy User @relation("IncidentCreator", fields:[createdById], references: [id])
+
+  assignments IncidentAssignment[]
+  messages Message[]
+  events IncidentEvent[]
+  notes IncidentNotes?
+
+  createdAt DateTime @default(now())
+  resolvedAt DateTime
+
+  @@index([status])
+  @@index([severity])
+}
+
+enum IncidentStatus{
+  OPEN
+  INVESTIGATING
+  MITIGATING
+  RESOLVED
+}
+
+enum IncidentSeverity{
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model IncidentAssignment{
+ id String @id @default(cuid())
+ incidentId String
+ incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+ userId String
+ user User @relation(fields: [userId], references: [id])
+ responsibility String
+ createdAt DateTime @default(now())
+
+ @@unique([incidentId, userId])
+}
+
+model Message{
+ id String @id @default(cuid())
+ content String
+ incidentId String
+ incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+ userId String
+ user User @relation(fields: [userId], references: [id])
+ createdAt DateTime @default(now())
+
+ @@index([incidentId])
+}
+
+model IncidentEvent{
+  id String @id @default(cuid())
+  type IncidentEventType
+  metadata Json?
+  description String
+  incidentId String
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([incidentId])
+}
+
+enum IncidentEventType{
+  CREATED
+  STATUS_CHANGED
+  SEVRITY_CHANGED
+  USER_JOINED
+  USER_ASSIGNED
+  RESOLVED
+  ALERT_TRIGGERED
+}
+
+model IncidentNotes{
+  id String @id @default(cuid())
+  incidentId String @unique
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  content Bytes?
+  updatedAt DateTime @updatedAt
+}
