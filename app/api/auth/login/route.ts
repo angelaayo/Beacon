@@ -2,9 +2,17 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { loginSchema } from "@/lib/validation/authSchema";
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const result = loginSchema.safeParse(await request.json());
+  if (!result.success) {
+    return Response.json(
+      { errors: result.error.flatten().fieldErrors },
+      { status: 400 },
+    );
+  }
+  const { email, password } = result.data;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {

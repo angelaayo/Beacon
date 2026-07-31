@@ -2,9 +2,17 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { signupSchema } from "@/lib/validation/authSchema";
 
 export async function POST(request: Request) {
-  const { name, email, password } = await request.json();
+  const result = signupSchema.safeParse(await request.json());
+  if (!result.success) {
+    return Response.json(
+      { errors: result.error.flatten().fieldErrors },
+      { status: 400 },
+    );
+  }
+  const { name, email, password } = result.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
