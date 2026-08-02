@@ -18,6 +18,8 @@ model User{
   email String @unique
   password String
   role UserRole @default(RESPONDER)
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id])
   incidentsCeated Incident[] @relation("IncidentCreator")
   assignments IncidentAssignment[]
   messages Message[]
@@ -33,6 +35,8 @@ enum UserRole{
 model Service{
   id String @id @default(cuid())
   name String
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id])
   description String?
   status ServiceStatus @default(OPERATIONAL)
   incidents Incident[]
@@ -47,6 +51,8 @@ enum ServiceStatus{
 
 model Incident{
   id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id])
   title String
   description String
   severity IncidentSeverity
@@ -136,4 +142,14 @@ model IncidentNotes{
   incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
   content Bytes?
   updatedAt DateTime @updatedAt
+}
+
+model Organization{
+  id String @id @default(cuid())
+  name String
+  joinCode String @unique
+  users User[]
+  services Service[]
+  incidents Incident[]
+  createdAt DateTime @default(now())
 }

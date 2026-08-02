@@ -3,6 +3,11 @@ import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { signupSchema } from "@/lib/validation/authSchema";
+import crypto from "crypto";
+
+function generateJoinCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
 
 export async function POST(request: Request) {
   const result = signupSchema.safeParse(await request.json());
@@ -12,19 +17,46 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  const { name, email, password } = result.data;
+  const { name, email, password, isJoining, companyCode, companyName } =
+    result.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     return Response.json({ message: "Email already in use" }, { status: 409 });
   }
+  let organizationId: string;
+  let userRole: "ADMIN" | "RESPONDER" = "RESPONDER";
+  if (isJoining) {
+    const org = await prisma.organization.findUnique({
+      where: { joinCode: companyCode },
+    });
+    if (!org) {
+      return Response.json(
+        { errors: { companyCode: ["Invalid company code"] } },
+        { status: 404 },
+      );
+    }
+    organizationId = org.id;
+  } else {
+    const newOrg = await prisma.organization.create({
+      data: { name: companyName!, joinCode: generateJoinCode() },
+    });
+    organizationId = newOrg.id;
+    userRole = "ADMIN";
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { name, email, password: hashedPassword },
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      organizationId,
+      role: userRole,
+    },
   });
 
   const token = jwt.sign(
-    { id: user.id, role: user.role },
+    { id: user.id, role: user.role, organizationId: user.organizationId },
     process.env.JWT_SECRET!,
     { expiresIn: "7d" },
   );
