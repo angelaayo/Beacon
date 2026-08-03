@@ -21,6 +21,7 @@ model User{
   organizationId String
   organization Organization @relation(fields: [organizationId], references: [id])
   incidentsCeated Incident[] @relation("IncidentCreator")
+  incidentEvents IncidentEvent[]
   assignments IncidentAssignment[]
   messages Message[]
   createdAt DateTime @default(now())
@@ -70,7 +71,7 @@ model Incident{
   notes IncidentNotes?
 
   createdAt DateTime @default(now())
-  resolvedAt DateTime
+  resolvedAt DateTime ?
 
   @@index([status])
   @@index([severity])
@@ -121,6 +122,8 @@ model IncidentEvent{
   description String
   incidentId String
   incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+   userId String?
+  user User? @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 
   @@index([incidentId])
@@ -129,7 +132,7 @@ model IncidentEvent{
 enum IncidentEventType{
   CREATED
   STATUS_CHANGED
-  SEVRITY_CHANGED
+  SEVERITY_CHANGED
   USER_JOINED
   USER_ASSIGNED
   RESOLVED
