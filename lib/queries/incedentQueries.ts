@@ -7,7 +7,7 @@ export async function getTopIncidents(organizationId: string) {
     take: 3,
     include: {
       service: true,
-      assignments: { include: { user: true } },
+      assignments: { include: { user: { select: { id: true, name: true } } } },
     },
   });
 }
@@ -35,5 +35,5 @@ export async function getIncidentStats(organizationId: string) {
       where: { organizationId, status: { not: "RESOLVED" } },
     }),
   ]);
-  return{ critical, high, medium, totalOpen}
+  return { critical, high, medium, totalOpen };
 }

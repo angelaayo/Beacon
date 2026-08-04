@@ -6,8 +6,12 @@ export async function getRecentActivity(organizationId: string) {
     orderBy: { createdAt: "desc" },
     take: 5,
     include: {
-      user: true,
-      incident: { select: { id: true, title: true } },
+      user: {
+        select: { id: true, name: true },
+      },
+      incident: {
+        select: { id: true, title: true },
+      },
     },
   });
 }
