@@ -29,8 +29,8 @@ const dashboardPage = async () => {
           color="black"
         />
         <StatsCard label="Critical" value={stats.critical} color="#BA1A1A" />
-        <StatsCard label="High" value={stats.high} color="black" />
-        <StatsCard label="Medium" value={stats.medium} color="black" />
+        <StatsCard label="High" value={stats.high} color="#F59E0B" />
+        <StatsCard label="Medium" value={stats.medium} color="#3B82F6" />
       </div>
       <div className="flex justify-between font-jetbrains text-sm md:text-base">
         <span>Active Incidents</span>

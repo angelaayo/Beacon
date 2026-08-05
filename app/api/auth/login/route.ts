@@ -26,7 +26,12 @@ export async function POST(request: Request) {
     return Response.json({ message: "Invalid credentials" }, { status: 401 });
   }
   const token = jwt.sign(
-    { id: user.id, role: user.role },
+    {
+      id: user.id,
+      role: user.role,
+      organizationId: user.organizationId,
+      name: user.name,
+    },
     process.env.JWT_SECRET!,
     { expiresIn: "7d" },
   );

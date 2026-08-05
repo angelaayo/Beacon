@@ -11,6 +11,7 @@ export async function verifyToken() {
       id: string;
       role: string;
       organizationId: string;
+      name: string;
     };
   } catch {
     return null;

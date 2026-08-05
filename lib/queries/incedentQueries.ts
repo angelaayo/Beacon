@@ -12,6 +12,27 @@ export async function getTopIncidents(organizationId: string) {
   });
 }
 
+export async function getAllIncidents(
+  organizationId: string,
+  page: number,
+  pageSize: number,
+) {
+  return prisma.incident.findMany({
+    where: { organizationId },
+    orderBy: [{ severity: "desc" }, { createdAt: "desc" }],
+    include: {
+      service: true,
+      assignments: { include: { user: { select: { id: true, name: true } } } },
+    },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+}
+
+export async function getIncidentCount(organizationId: string) {
+  return prisma.incident.count({ where: { organizationId } });
+}
+
 export async function getIncidentStats(organizationId: string) {
   const [critical, high, medium, totalOpen] = await Promise.all([
     prisma.incident.count({
@@ -36,4 +57,34 @@ export async function getIncidentStats(organizationId: string) {
     }),
   ]);
   return { critical, high, medium, totalOpen };
+}
+
+export async function getIncident(id: string, organizationId: string) {
+  return prisma.incident.findFirst({
+    where: {
+      id,
+      organizationId,
+    },
+    include: {
+      messages: {
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      events: {
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      notes: true,
+    },
+  });
 }
