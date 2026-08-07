@@ -20,7 +20,7 @@ const dashboardPage = async () => {
     getRecentActivity(user.organizationId),
   ]);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 px-2">
       <h3 className="font-jetbrains text-sm md:text-base">System Overview</h3>
       <div className="grid grid-cols-2  md:grid-cols-4 gap-3">
         <StatsCard

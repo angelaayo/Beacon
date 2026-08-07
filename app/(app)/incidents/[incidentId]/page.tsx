@@ -22,7 +22,7 @@ const IncidentDetailPage = async ({
   return (
     <div className="flex flex-col gap-3">
       <IncidentHeader key={incident.id} incident={incident} />
-      <IncidentBody/>
+      <IncidentBody incident={incident} user={user}/>
     </div>
   );
 };

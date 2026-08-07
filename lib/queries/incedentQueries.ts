@@ -66,6 +66,13 @@ export async function getIncident(id: string, organizationId: string) {
       organizationId,
     },
     include: {
+      service: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+        },
+      },
       messages: {
         include: {
           user: {

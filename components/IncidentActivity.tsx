@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import type { Incident, IncidentSeverity } from "@/app/generated/prisma/client";
 const IncidentActivity = ({ incident }: { incident: Incident }) => {
   const statusColors: Record<IncidentSeverity, string> = {
@@ -8,7 +9,7 @@ const IncidentActivity = ({ incident }: { incident: Incident }) => {
     LOW: "#d6f1df",
   };
   return (
-    <div className="border-3 px-3 py-2  bg-white rounded-md flex flex-col gap-2">
+    <Link href={`/incidents/${incident.id}`} className="border-3 px-3 py-2  bg-white rounded-md flex flex-col gap-2">
       <div className="flex justify-between text-xs md:text-sm font-jetbrains">
         <span>INC-2045</span>
         <span
@@ -24,7 +25,7 @@ const IncidentActivity = ({ incident }: { incident: Incident }) => {
           {incident.status}
         </span>
       </div>
-    </div>
+    </Link>
   );
 };
 
