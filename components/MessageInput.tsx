@@ -1,17 +1,17 @@
 "use client";
 import { useState, SubmitEventHandler } from "react";
 import { getIncident } from "@/lib/queries/incedentQueries";
-import { createMessage } from "@/lib/queries/messageQueries";
+// import { createMessage } from "@/lib/queries/messageQueries";
 
 type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
-type Message = Awaited<ReturnType<typeof createMessage>>;
+// type Message = Awaited<ReturnType<typeof createMessage>>;
 
-type Props = {
-  incident: Incident;
-  onMessageSent: (message: Message) => void;
-};
+// type Props = {
+//   incident: Incident;
+//   onMessageSent: (message: Message) => void;
+// };
 
-const MessageInput = ({ incident, onMessageSent }: Props) => {
+const MessageInput = ({ incident}: {incident: Incident}) => {
   const [msgContent, setMsgContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +32,6 @@ const MessageInput = ({ incident, onMessageSent }: Props) => {
         const errData = await res.json();
         throw new Error(errData.message || "Failed to send message");
       }
-
-      const newMessage: Message = await res.json();
-      onMessageSent(newMessage);
       setMsgContent("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

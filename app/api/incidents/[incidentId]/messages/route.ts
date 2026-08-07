@@ -30,5 +30,6 @@ export async function POST(
   }
 
   const message = await createMessage(result.data.content, incidentId, user.id);
+  global.io.to(`incidents:${incidentId}`).emit("newMessage", message);
   return Response.json(message);
 }

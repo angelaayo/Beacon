@@ -1,10 +1,12 @@
-// components/MessagesPanel.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MessageCard from "@/components/Message";
 import MessageInput from "./MessageInput";
 import { getIncident } from "@/lib/queries/incedentQueries";
 import { verifyToken } from "@/lib/auth/jwt";
+import { io, Socket } from "socket.io-client";
+
+let socket: Socket;
 
 type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 type User = NonNullable<Awaited<ReturnType<typeof verifyToken>>>;
@@ -18,9 +20,22 @@ type Props = {
 const MessagesPanel = ({ incident, user }: Props) => {
   const [messages, setMessages] = useState<Message[]>(incident.messages);
 
-  function handleMessageSent(newMessage: Message) {
-    setMessages((prev) => [...prev, newMessage]);
-  }
+  useEffect(() => {
+    socket = io();
+    socket.emit("joinIncident", incident.id);
+    socket.on("newMessage", (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.emit("leaveIncident", incident.id);
+      socket.disconnect();
+    };
+  }, [incident.id]);
+
+  // function handleMessageSent(newMessage: Message) {
+  //   setMessages((prev) => [...prev, newMessage]);
+  // }
 
   return (
     <div className="border-2 pb-4 flex flex-col gap-2">
@@ -33,7 +48,7 @@ const MessagesPanel = ({ incident, user }: Props) => {
         ))}
       </div>
       <div>
-        <MessageInput incident={incident} onMessageSent={handleMessageSent} />
+        <MessageInput incident={incident}/>
       </div>
     </div>
   );
