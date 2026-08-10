@@ -1,5 +1,6 @@
+import { IncidentSeverity } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-
+import { CreateIncidentInput } from "@/lib/validation/incidentSchema";
 export async function getTopIncidents(organizationId: string) {
   return prisma.incident.findMany({
     where: { organizationId, status: { not: "RESOLVED" } },
@@ -34,7 +35,7 @@ export async function getIncidentCount(organizationId: string) {
 }
 
 export async function getIncidentStats(organizationId: string) {
-  const [critical, high, medium, totalOpen] = await Promise.all([
+  const [critical, high, medium, totalOpen, unassigned] = await Promise.all([
     prisma.incident.count({
       where: {
         organizationId,
@@ -55,8 +56,15 @@ export async function getIncidentStats(organizationId: string) {
     prisma.incident.count({
       where: { organizationId, status: { not: "RESOLVED" } },
     }),
+    prisma.incident.count({
+      where: {
+        organizationId,
+        status: { not: "RESOLVED" },
+        assignments: { none: {} },
+      },
+    }),
   ]);
-  return { critical, high, medium, totalOpen };
+  return { critical, high, medium, totalOpen, unassigned };
 }
 
 export async function getIncident(id: string, organizationId: string) {
@@ -92,6 +100,24 @@ export async function getIncident(id: string, organizationId: string) {
         },
       },
       notes: true,
+    },
+  });
+}
+
+export async function createIncident(
+  organizationId: string,
+  createdById: string,
+  data: CreateIncidentInput,
+) {
+  return prisma.incident.create({
+    data: {
+      ...data,
+      organizationId,
+      createdById,
+    },
+    include: {
+      service: true,
+      assignments: { include: { user: { select: { id: true, name: true } } } },
     },
   });
 }

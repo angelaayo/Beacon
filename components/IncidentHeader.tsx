@@ -1,27 +1,22 @@
-import { Incident, IncidentSeverity } from "@/app/generated/prisma/client";
-import React from "react";
+import { Incident } from "@/app/generated/prisma/client";
 import { formatDistanceToNow } from "date-fns";
+import { SeverityBadge } from "@/components/SeverityBadge";
+
 const IncidentHeader = ({ incident }: { incident: Incident }) => {
-  const date = new Date(incident.createdAt);
-  const dateResult = formatDistanceToNow(date, { addSuffix: true });
-  const statusColors: Record<IncidentSeverity, string> = {
-    CRITICAL: "#ba1a1ac5",
-    HIGH: "#f59f0ba8",
-    MEDIUM: "#0059bebe",
-    LOW: "#3a9157ad",
-  };
+  const dateResult = formatDistanceToNow(new Date(incident.createdAt), { addSuffix: true });
+
   return (
-    <div className="border-b-4 pb-2">
-      <div className="flex justify-between">
-        <div className="flex gap-2">
-          <span>INC-102</span>
-          <span style={{ backgroundColor: statusColors[incident.severity] }} className="px-2 text-white font-bold">
-            {incident.severity}
+    <div className="border-b pb-4">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <span className="font-jetbrains text-sm text-muted-foreground">
+            INC-{incident.id.slice(-4).toUpperCase()}
           </span>
+          <SeverityBadge severity={incident.severity} />
         </div>
-        <span className="text-sm md:text-base">{dateResult}</span>
+        <span className="text-sm md:text-base text-muted-foreground">{dateResult}</span>
       </div>
-      <h3>{incident.title}</h3>
+      <h3 className="text-xl font-hanken font-semibold mt-2">{incident.title}</h3>
     </div>
   );
 };

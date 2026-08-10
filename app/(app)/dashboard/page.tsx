@@ -1,5 +1,4 @@
 import { verifyToken } from "@/lib/auth/jwt";
-import React from "react";
 import {
   getIncidentStats,
   getTopIncidents,
@@ -9,33 +8,39 @@ import StatsCard from "@/components/StatsCard";
 import IncidentActivity from "@/components/IncidentActivity";
 import RecentActivity from "@/components/RecentActivity";
 import Link from "next/link";
-const dashboardPage = async () => {
+
+const DashboardPage = async () => {
   const user = await verifyToken();
-  if (!user) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 });
-  }
   const [stats, topIncidents, recentActivity] = await Promise.all([
-    getIncidentStats(user.organizationId),
-    getTopIncidents(user.organizationId),
-    getRecentActivity(user.organizationId),
+    getIncidentStats(user!.organizationId),
+    getTopIncidents(user!.organizationId),
+    getRecentActivity(user!.organizationId),
   ]);
+
   return (
-    <div className="flex flex-col gap-3 px-2">
-      <h3 className="font-jetbrains text-sm md:text-base">System Overview</h3>
-      <div className="grid grid-cols-2  md:grid-cols-4 gap-3">
+    <div className="flex flex-col gap-4 px-2 py-4">
+      <h3 className="font-jetbrains text-sm md:text-base text-muted-foreground">
+        System Overview
+      </h3>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatsCard label="Open Incidents" value={stats.totalOpen} />
         <StatsCard
-          label="Open Incidents"
-          value={stats.totalOpen}
-          color="black"
+          label="Critical"
+          value={stats.critical}
+          severity="critical"
         />
-        <StatsCard label="Critical" value={stats.critical} color="#BA1A1A" />
-        <StatsCard label="High" value={stats.high} color="#F59E0B" />
-        <StatsCard label="Medium" value={stats.medium} color="#3B82F6" />
+        <StatsCard label="High" value={stats.high} severity="high" />
+        <StatsCard label="Unassigned" value={stats.unassigned} />
       </div>
-      <div className="flex justify-between font-jetbrains text-sm md:text-base">
-        <span>Active Incidents</span>
-        <Link href="/incidents" className=" border-b-3 border-b-black">
-          View All
+
+      <div className="flex justify-between items-center font-jetbrains text-sm md:text-base mt-2">
+        <span className="font-semibold">Active Incidents</span>
+        <Link
+          href="/incidents"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          View All →
         </Link>
       </div>
       <div className="flex flex-col gap-3">
@@ -43,7 +48,8 @@ const dashboardPage = async () => {
           <IncidentActivity key={incident.id} incident={incident} />
         ))}
       </div>
-      <div className="flex flex-col gap-7 px-4 border-l-5 ">
+
+      <div className="flex flex-col gap-6 px-4 border-l-2 border-border mt-2">
         {recentActivity.map((activity) => (
           <RecentActivity
             key={activity.id}
@@ -56,4 +62,4 @@ const dashboardPage = async () => {
   );
 };
 
-export default dashboardPage;
+export default DashboardPage;

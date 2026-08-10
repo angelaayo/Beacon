@@ -1,3 +1,4 @@
+import { IncidentEventType } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function getRecentActivity(organizationId: string) {
@@ -13,5 +14,17 @@ export async function getRecentActivity(organizationId: string) {
         select: { id: true, title: true },
       },
     },
+  });
+}
+
+export async function createEvent(
+  incidentId: string,
+  userId: string | null,
+  type: IncidentEventType,
+  description: string,
+  metadata?: object,
+) {
+  return prisma.incidentEvent.create({
+    data: { incidentId, userId, type, description, metadata },
   });
 }

@@ -4,7 +4,6 @@ import {
   getIncidentCount,
 } from "@/lib/queries/incedentQueries";
 import React from "react";
-import { redirect } from "next/navigation";
 import IncidentPreview from "@/components/IncidentPreview";
 import IncidentsPagination from "@/components/IncidentsPagination";
 import IncidentSearch from "@/components/IncidentSearch";
@@ -16,10 +15,9 @@ const IncidentPage = async ({
 }) => {
   const params = await searchParams;
   const page = Number(params.page) || 1;
-  const pageSize = 10;
+  const pageSize = 5;
 
   const user = await verifyToken();
-  if (!user) redirect("/login");
 
   const [incidents, totalCount] = await Promise.all([
     getAllIncidents(user!.organizationId, page, pageSize),
