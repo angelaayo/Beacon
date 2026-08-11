@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-const inputStyle = "py-5 bg-[#FFFFFF] border-2 border-[#657D6A]";
+const inputStyle = "py-5 bg-background border-2 border-primary";
 const SignUpForm = () => {
   const {
     register,

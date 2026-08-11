@@ -1,25 +1,62 @@
 import React from "react";
 import { getIncident } from "@/lib/queries/incedentQueries";
-import MessageCard from "@/components/Message";
 import { verifyToken } from "@/lib/auth/jwt";
-import MessageInput from "./MessageInput";
 import MessagesPanel from "./MessagesPanel";
+import IncidentActions from "./IncidentActions";
+import IncidentEventHistory from "./IncidentEventHistory";
+import ImpactedServices from "./ImpactedServices";
+
 type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 type User = NonNullable<Awaited<ReturnType<typeof verifyToken>>>;
+
 type Props = {
   incident: Incident;
   user: User;
 };
+
 const IncidentOverview = ({ incident, user }: Props) => {
   return (
-    <div className="flex flex-col gap-2 pt-4 font-hanken">
-      <h2 className="text-sm text-gray-600 font-semibold">DESCRIPTION</h2>
-      <div className="border-4 bg-[#F5F3F4] p-2 text-base">
-        {incident.description}
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)] gap-6 pt-4 font-hanken">
+      {/* LEFT SIDE */}
+      <div className="flex flex-col gap-6 min-w-0">
+        {/* DESCRIPTION */}
+        <section>
+          <h2 className="text-sm text-muted-foreground font-semibold mb-2">
+            DESCRIPTION
+          </h2>
+
+          <div className="bg-card border rounded-lg p-4">
+            <p className="text-base leading-relaxed">{incident.description}</p>
+          </div>
+        </section>
+
+        {/* MOBILE ONLY: impacted services */}
+        <div className="lg:hidden">
+          <ImpactedServices incident={incident} />
+        </div>
+
+        {/* MOBILE ONLY: activity */}
+        <div className="lg:hidden">
+          <IncidentEventHistory events={incident.events} />
+        </div>
+
+        {/* MESSAGES */}
+        <MessagesPanel incident={incident} user={user} />
+
+        {/* MOBILE ONLY: actions */}
+        <div className="lg:hidden">
+          <IncidentActions incident={incident}/>
+        </div>
       </div>
-      <h2 className="text-sm text-gray-600 font-semibold">IMPACTED SERVICE</h2>
-      <h3 className="bg-[#EAE7E9] w-fit px-2 py-1">{incident.service.name}</h3>
-      <MessagesPanel incident={incident} user={user} />
+
+      {/* RIGHT SIDE */}
+      <div className="hidden lg:flex flex-col gap-6 min-w-0">
+        <IncidentActions incident={incident}/>
+
+        <IncidentEventHistory events={incident.events} />
+
+        <ImpactedServices incident={incident} />
+      </div>
     </div>
   );
 };

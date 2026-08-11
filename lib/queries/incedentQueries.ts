@@ -1,4 +1,7 @@
-import { IncidentSeverity } from "@/app/generated/prisma/client";
+import {
+  IncidentSeverity,
+  IncidentStatus,
+} from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { CreateIncidentInput } from "@/lib/validation/incidentSchema";
 export async function getTopIncidents(organizationId: string) {
@@ -119,5 +122,30 @@ export async function createIncident(
       service: true,
       assignments: { include: { user: { select: { id: true, name: true } } } },
     },
+  });
+}
+
+export async function updateIncidentStatus(
+  id: string,
+  organizationId: string,
+  status: IncidentStatus,
+) {
+  return prisma.incident.update({
+    where: { id, organizationId },
+    data: {
+      status,
+      resolvedAt: status === "RESOLVED" ? new Date() : null,
+    },
+  });
+}
+
+export async function updateIncidentSeverity(
+  id: string,
+  organizationId: string,
+  severity: IncidentSeverity,
+) {
+  return prisma.incident.update({
+    where: { id, organizationId },
+    data: { severity },
   });
 }

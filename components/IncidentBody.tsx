@@ -15,9 +15,9 @@ type Props = {
 const IncidentBody = ({ incident, user }: Props) => {
   const [overview, setOverview] = useState(true);
   const clickedStyle =
-    "bg-[#003825] text-white font-semibold px-8 py-1 rounded-md";
+    "bg-primary text-primary-foreground font-semibold px-8 py-1.5 rounded-md text-sm";
   const notClickedStyle =
-    "bg-[#FFFFFF] px-8 py-1 border-4 font-semibold text-gray-600 rounded-md";
+    "bg-card border px-8 py-1.5 font-semibold text-muted-foreground rounded-md text-sm hover:text-foreground transition-colors";
   return (
     <div>
       <div className="flex gap-4 px-3 font-hanken text-sm justify-center md:justify-start">
