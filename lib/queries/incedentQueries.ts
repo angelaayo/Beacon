@@ -20,9 +20,25 @@ export async function getAllIncidents(
   organizationId: string,
   page: number,
   pageSize: number,
+  search?: string,
 ) {
+  const codeMatch = search?.match(/^(?:INC-)?([A-Za-z0-9]{4})$/);
+
   return prisma.incident.findMany({
-    where: { organizationId },
+    where: {
+      organizationId,
+      ...(search && {
+        OR: [
+          { id: { contains: search, mode: "insensitive" } },
+          { title: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+          { service: { name: { contains: search, mode: "insensitive" } } },
+          ...(codeMatch
+            ? [{ id: { endsWith: codeMatch[1], mode: "insensitive" as const } }]
+            : []),
+        ],
+      }),
+    },
     orderBy: [{ severity: "desc" }, { createdAt: "desc" }],
     include: {
       service: true,
@@ -33,8 +49,27 @@ export async function getAllIncidents(
   });
 }
 
-export async function getIncidentCount(organizationId: string) {
-  return prisma.incident.count({ where: { organizationId } });
+export async function getIncidentCount(
+  organizationId: string,
+  search?: string,
+) {
+  const codeMatch = search?.match(/^(?:INC-)?([A-Za-z0-9]{4})$/);
+  return prisma.incident.count({
+    where: {
+      organizationId,
+      ...(search && {
+        OR: [
+          { id: { contains: search, mode: "insensitive" } },
+          { title: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+          { service: { name: { contains: search, mode: "insensitive" } } },
+          ...(codeMatch
+            ? [{ id: { endsWith: codeMatch[1], mode: "insensitive" as const } }]
+            : []),
+        ],
+      }),
+    },
+  });
 }
 
 export async function getIncidentStats(organizationId: string) {

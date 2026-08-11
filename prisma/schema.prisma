@@ -25,6 +25,7 @@ model User{
   assignments IncidentAssignment[]
   messages Message[]
   createdAt DateTime @default(now())
+  avatarColor String @default("gray")
 }
 
 enum UserRole{

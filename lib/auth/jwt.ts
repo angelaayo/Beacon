@@ -12,6 +12,8 @@ export async function verifyToken() {
       role: string;
       organizationId: string;
       name: string;
+      avatarColor: string;
+      email: string;
     };
   } catch {
     return null;
