@@ -45,13 +45,13 @@ const IncidentOverview = ({ incident, user }: Props) => {
 
         {/* MOBILE ONLY: actions */}
         <div className="lg:hidden">
-          <IncidentActions incident={incident}/>
+         <IncidentActions incident={incident} currentUserId={user.id} isAdmin={user.role === "ADMIN"} />
         </div>
       </div>
 
       {/* RIGHT SIDE */}
       <div className="hidden lg:flex flex-col gap-6 min-w-0">
-        <IncidentActions incident={incident}/>
+        <IncidentActions incident={incident} currentUserId={user.id} isAdmin={user.role === "ADMIN"} />
 
         <IncidentEventHistory events={incident.events} />
 

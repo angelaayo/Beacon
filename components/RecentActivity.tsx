@@ -11,7 +11,7 @@ const RecentActivity = ({ activity, date }: Props) => {
   return (
     <div>
       <h3 className="font-hanken text-lg">
-        <span className="font-semibold">{activity.user!.name}</span>{" "}
+        <span className="font-semibold">{activity.user?.name}</span>{" "}
         <span> </span>
         <span>{activity.description}</span>
       </h3>

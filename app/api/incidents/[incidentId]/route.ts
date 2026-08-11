@@ -33,8 +33,8 @@ export async function PATCH(
     );
     const description =
       result.data.status === "RESOLVED"
-        ? `${user.name} resolved this incident`
-        : `${user.name} changed status to ${result.data.status}`;
+        ? `resolved this incident`
+        : `changed status to ${result.data.status}`;
     await createEvent(
       incidentId,
       user.id,
@@ -54,7 +54,7 @@ export async function PATCH(
       incidentId,
       user.id,
       "SEVERITY_CHANGED",
-      `${user.name} changed severity to ${result.data.severity}`,
+      `changed severity to ${result.data.severity}`,
       { to: result.data.severity },
     );
   }

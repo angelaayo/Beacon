@@ -72,36 +72,12 @@ export async function getIncidentStats(organizationId: string) {
 
 export async function getIncident(id: string, organizationId: string) {
   return prisma.incident.findFirst({
-    where: {
-      id,
-      organizationId,
-    },
+    where: { id, organizationId },
     include: {
-      service: {
-        select: {
-          id: true,
-          name: true,
-          status: true,
-        },
-      },
-      messages: {
-        include: {
-          user: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      events: {
-        include: {
-          user: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
+      service: { select: { id: true, name: true, status: true } },
+      messages: { include: { user: { select: { name: true } } } },
+      events: { include: { user: { select: { name: true } } } },
+      assignments: { include: { user: { select: { id: true, name: true } } } },
       notes: true,
     },
   });
