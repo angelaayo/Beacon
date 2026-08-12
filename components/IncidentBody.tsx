@@ -39,7 +39,7 @@ const IncidentBody = ({ incident, user }: Props) => {
       {overview ? (
         <IncidentOverview incident={incident} user={user} />
       ) : (
-        <IncidentNotebook />
+        <IncidentNotebook incidentId={incident.id} />
       )}
     </div>
   );

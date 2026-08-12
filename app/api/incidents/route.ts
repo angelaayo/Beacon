@@ -23,20 +23,19 @@ export async function POST(request: Request) {
     where: { id: result.data.serviceId, organizationId: user.organizationId },
   });
   if (!service) {
-    return Response.json({ errors: { serviceId: ["Invalid service"] } }, { status: 400 });
+    return Response.json(
+      { errors: { serviceId: ["Invalid service"] } },
+      { status: 400 },
+    );
   }
 
-  const incident = await createIncident(user.organizationId, user.id, result.data);
+  const incident = await createIncident(
+    user.organizationId,
+    user.id,
+    result.data,
+  );
 
   await createEvent(incident.id, user.id, "CREATED", `created this incident`);
-
-  await prisma.incidentAssignment.create({
-    data: {
-      incidentId: incident.id,
-      userId: user.id,
-      responsibility: "Reported and investigating",
-    },
-  });
 
   return Response.json(incident);
 }

@@ -3,6 +3,7 @@ import { createAssignmentSchema } from "@/lib/validation/assignmentSchema";
 import { createAssignment } from "@/lib/queries/assignmentQueries";
 import { createEvent } from "@/lib/queries/eventQueries";
 import { prisma } from "@/lib/prisma";
+import { updateIncidentStatus } from "@/lib/queries/incedentQueries";
 
 export async function POST(
   request: Request,
@@ -29,6 +30,7 @@ export async function POST(
   const [incident, targetUser] = await Promise.all([
     prisma.incident.findUnique({
       where: { id: incidentId, organizationId: user.organizationId },
+      include: { assignments: true },
     }),
     prisma.user.findUnique({
       where: { id: result.data.userId, organizationId: user.organizationId },
@@ -54,6 +56,22 @@ export async function POST(
       : `assigned ${targetUser.name}`,
     { assignedUserId: result.data.userId },
   );
+
+  const isFirstAssignment = incident.assignments.length === 0;
+  if (isFirstAssignment && incident.status === "OPEN") {
+    await updateIncidentStatus(
+      incidentId,
+      user.organizationId,
+      "INVESTIGATING",
+    );
+    await createEvent(
+      incidentId,
+      null,
+      "STATUS_CHANGED",
+      "Status automatically changed to Investigating",
+      { to: "INVESTIGATING" },
+    );
+  }
 
   return Response.json(assignment);
 }

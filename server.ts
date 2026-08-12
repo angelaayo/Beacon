@@ -33,6 +33,13 @@ app.prepare().then(() => {
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);
     });
+
+    socket.on(
+      "docUpdate",
+      ({ incidentId, update }: { incidentId: string; update: number[] }) => {
+        socket.to(`incidents:${incidentId}`).emit("docUpdate", update);
+      },
+    );
   });
 
   const port = process.env.PORT || 3000;
