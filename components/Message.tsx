@@ -1,20 +1,9 @@
-import { Message as PrismaMessage } from "@/app/generated/prisma/client";
-import React from "react";
-import {
-  Bubble,
-  BubbleContent,
-  BubbleGroup,
-  BubbleReactions,
-} from "@/components/ui/bubble";
-import {
-  Message as ChatMessage,
-  MessageAvatar,
-  MessageContent,
-  MessageFooter,
-  MessageHeader,
-} from "@/components/ui/message";
-import { verifyToken } from "@/lib/auth/jwt";
+import { formatDistanceToNowStrict } from "date-fns";
+import { Avatar } from "@/components/Avatar";
+import { cn } from "@/lib/utils";
 import { getIncident } from "@/lib/queries/incedentQueries";
+import { verifyToken } from "@/lib/auth/jwt";
+
 type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 type User = NonNullable<Awaited<ReturnType<typeof verifyToken>>>;
 
@@ -22,19 +11,32 @@ type Props = {
   message: Incident["messages"][number];
   user: User;
 };
+
 const MessageCard = ({ message, user }: Props) => {
+  const isOwn = message.userId === user.id;
+
   return (
-    <ChatMessage
-      align={message.userId === user.id ? "end" : "start"}
-      className=""
-    >
-      <MessageContent>
-        <MessageHeader>{message.user.name}</MessageHeader>
-        <Bubble className="bg-[#F5F3F4] w-fit p-2">
-          <BubbleContent className="text-sm">{message.content}</BubbleContent>
-        </Bubble>
-      </MessageContent>
-    </ChatMessage>
+    <div className={cn("flex gap-2 items-end", isOwn && "flex-row-reverse")}>
+      <Avatar name={message.user.name} color={message.user.avatarColor} size="sm" />
+      <div className={cn("flex flex-col gap-1 max-w-[75%]", isOwn && "items-end")}>
+        <div className="flex items-baseline gap-2">
+          {!isOwn && <span className="text-xs font-medium">{message.user.name}</span>}
+          <span className="text-xs text-muted-foreground">
+            {formatDistanceToNowStrict(new Date(message.createdAt), { addSuffix: true })}
+          </span>
+        </div>
+        <div
+          className={cn(
+            "rounded-2xl px-3 py-2 text-sm",
+            isOwn
+              ? "bg-primary text-primary-foreground rounded-br-sm"
+              : "bg-muted text-foreground rounded-bl-sm",
+          )}
+        >
+          {message.content}
+        </div>
+      </div>
+    </div>
   );
 };
 

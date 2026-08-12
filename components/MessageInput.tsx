@@ -1,23 +1,19 @@
 "use client";
-import { useState, SubmitEventHandler } from "react";
+import { useState } from "react";
+import type { SubmitEventHandler } from "react";
+import { Button } from "@/components/ui/button";
 import { getIncident } from "@/lib/queries/incedentQueries";
-// import { createMessage } from "@/lib/queries/messageQueries";
 
 type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
-// type Message = Awaited<ReturnType<typeof createMessage>>;
 
-// type Props = {
-//   incident: Incident;
-//   onMessageSent: (message: Message) => void;
-// };
-
-const MessageInput = ({ incident}: {incident: Incident}) => {
+const MessageInput = ({ incident }: { incident: Incident }) => {
   const [msgContent, setMsgContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSendMessage: SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+    if (!msgContent.trim()) return;
     try {
       setLoading(true);
       setError(null);
@@ -40,20 +36,30 @@ const MessageInput = ({ incident}: {incident: Incident}) => {
     }
   };
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+    }
+  }
+
   return (
-    <div>
-      <form onSubmit={handleSendMessage} className="border">
+    <form onSubmit={handleSendMessage} className="flex flex-col gap-2">
+      <div className="flex gap-2 items-end">
         <textarea
-          placeholder="New Message"
+          placeholder="Send a message..."
           value={msgContent}
           onChange={(e) => setMsgContent(e.target.value)}
+          onKeyDown={handleKeyDown}
+          rows={1}
+          className="flex-1 resize-none rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send"}
-        </button>
-      </form>
-    </div>
+        <Button type="submit" disabled={loading || !msgContent.trim()} size="sm">
+          {loading ? "..." : "Send"}
+        </Button>
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </form>
   );
 };
 

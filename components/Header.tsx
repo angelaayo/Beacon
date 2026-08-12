@@ -4,17 +4,19 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import IncidentSearch from "@/components/IncidentSearch";
 import { Avatar } from "@/components/Avatar";
-import { prisma } from "@/lib/prisma";
+import { getUserInfo } from "@/lib/queries/userQueries";
 const Header = async () => {
   const user = await verifyToken();
-  const userAvatar = await prisma.user.findUnique({
-    where: { id: user!.id },
-    select: { avatarColor: true },
-  });
-  if (!userAvatar) {
-    throw new Error("User not found");
+  if (!user) {
+    redirect("/login");
   }
-  const avatarColor = userAvatar.avatarColor;
+
+  const userAvatar = await getUserInfo(user.id);
+
+  if (!userAvatar) {
+    redirect("/login");
+  }
+
   return (
     <div className="border-b flex items-center justify-between gap-4 px-4 py-2 bg-card">
       <Link href="/dashboard" className="font-hanken font-semibold shrink-0">
@@ -40,11 +42,17 @@ const Header = async () => {
         href="/settings/account"
         className="flex items-center gap-2 shrink-0"
       >
-        <Avatar name={user!.name} color={avatarColor} size="sm" />
+        <Avatar
+          name={userAvatar.name}
+          color={userAvatar.avatarColor}
+          size="sm"
+        />
         <div className="hidden sm:block text-left">
-          <h3 className="text-sm font-medium leading-tight">{user!.name}</h3>
+          <h3 className="text-sm font-medium leading-tight">
+            {userAvatar.name}
+          </h3>
           <h3 className="text-xs text-muted-foreground capitalize leading-tight">
-            {user!.role.toLowerCase()}
+            {user.role.toLowerCase()}
           </h3>
         </div>
       </Link>

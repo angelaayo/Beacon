@@ -110,7 +110,7 @@ export async function getIncident(id: string, organizationId: string) {
     where: { id, organizationId },
     include: {
       service: { select: { id: true, name: true, status: true } },
-      messages: { include: { user: { select: { name: true } } } },
+      messages: { include: { user: { select: { id: true, name: true, avatarColor: true } } } },
       events: { include: { user: { select: { name: true } } } },
       assignments: { include: { user: { select: { id: true, name: true } } } },
       notes: true,

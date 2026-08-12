@@ -12,12 +12,7 @@ type Incident = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 type User = NonNullable<Awaited<ReturnType<typeof verifyToken>>>;
 type Message = Incident["messages"][number];
 
-type Props = {
-  incident: Incident;
-  user: User;
-};
-
-const MessagesPanel = ({ incident, user }: Props) => {
+const MessagesPanel = ({ incident, user }: { incident: Incident; user: User }) => {
   const [messages, setMessages] = useState<Message[]>(incident.messages);
 
   useEffect(() => {
@@ -33,22 +28,24 @@ const MessagesPanel = ({ incident, user }: Props) => {
     };
   }, [incident.id]);
 
-  // function handleMessageSent(newMessage: Message) {
-  //   setMessages((prev) => [...prev, newMessage]);
-  // }
-
   return (
-    <div className="border-2 pb-4 flex flex-col gap-2">
-      <h3 className="text-sm text-gray-600 font-bold p-4 border-b-2 border-b-[]">
-        MESSAGES ({messages.length})
+    <div className="border rounded-lg bg-card flex flex-col">
+      <h3 className="text-sm font-semibold px-4 py-3 border-b">
+        Messages <span className="text-muted-foreground font-normal">({messages.length})</span>
       </h3>
-      <div className="flex flex-col gap-4 px-2">
-        {messages.map((message) => (
-          <MessageCard key={message.id} message={message} user={user} />
-        ))}
+
+      <div className="flex flex-col gap-4 px-4 py-3 max-h-96 overflow-y-auto">
+        {messages.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            No messages yet — be the first to say something.
+          </p>
+        ) : (
+          messages.map((message) => <MessageCard key={message.id} message={message} user={user} />)
+        )}
       </div>
-      <div>
-        <MessageInput incident={incident}/>
+
+      <div className="border-t px-4 py-3">
+        <MessageInput incident={incident} />
       </div>
     </div>
   );

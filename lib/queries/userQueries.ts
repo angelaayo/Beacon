@@ -8,10 +8,20 @@ export async function getOrgMembers(organizationId: string) {
   });
 }
 
-export async function updateAvatarColor(userId: string, avatarColor: string) {
+export async function updateUser(
+  userId: string,
+  data: { name?: string; avatarColor?: string },
+) {
   return prisma.user.update({
     where: { id: userId },
-    data: { avatarColor },
+    data,
     select: { id: true, name: true, avatarColor: true },
+  });
+}
+
+export async function getUserInfo(id: string) {
+  return await prisma.user.findUnique({
+    where: { id},
+    select: { avatarColor: true, name: true },
   });
 }

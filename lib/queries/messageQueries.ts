@@ -8,7 +8,7 @@ export async function createMessage(
   return prisma.message.create({
     data: { incidentId, userId, content },
     include: {
-      user: { select: { id: true, name: true } },
+      user: { select: { id: true, name: true, avatarColor: true } },
     },
   });
 }

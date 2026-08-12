@@ -12,3 +12,15 @@ export async function deleteAssignment(incidentId: string, userId: string) {
     where: { incidentId, userId },
   });
 }
+
+export async function getUserAssignments(userId: string, organizationId: string) {
+  return prisma.incidentAssignment.findMany({
+    where: { userId, incident: { organizationId } },
+    include: {
+      incident: {
+        select: { id: true, title: true, status: true, severity: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
