@@ -3,8 +3,14 @@ import { prisma } from "@/lib/prisma";
 export async function getOrgMembers(organizationId: string) {
   return prisma.user.findMany({
     where: { organizationId },
-    select: { id: true, name: true, role: true },
-    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      avatarColor: true,
+    },
+    orderBy: [{ role: "asc" }, { name: "asc" }],
   });
 }
 
@@ -21,7 +27,7 @@ export async function updateUser(
 
 export async function getUserInfo(id: string) {
   return await prisma.user.findUnique({
-    where: { id},
+    where: { id },
     select: { avatarColor: true, name: true },
   });
 }

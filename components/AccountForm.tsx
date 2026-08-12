@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { cn } from "@/lib/utils";
 import { getUserAssignments } from "@/lib/queries/assignmentQueries";
+import LogoutButton from "@/components/LogoutButton";
 
 const COLORS = ["gray", "green", "blue", "amber", "rose"] as const;
 
@@ -138,6 +139,9 @@ export default function AccountForm({
             ))}
           </div>
         )}
+      </div>
+      <div className="pt-4 border-t">
+        <LogoutButton />
       </div>
     </div>
   );

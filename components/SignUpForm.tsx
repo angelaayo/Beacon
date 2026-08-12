@@ -43,7 +43,7 @@ const SignUpForm = () => {
       setLoading(true);
       const res = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "applications/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) {
@@ -63,7 +63,9 @@ const SignUpForm = () => {
     <div className=" flex flex-col gap-5 text-base sm:text-lg md:text-xl lg:text-2xl font-hanken font-semibold">
       <div className="flex flex-col items-center">
         <h1>Create Your Account</h1>
-        <Link href="/login" className="text-sm text-gray-500 underline ">Already Have A Beacon Profile? Log In</Link>
+        <Link href="/login" className="text-sm text-gray-500 underline ">
+          Already Have A Beacon Profile? Log In
+        </Link>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldSet>
@@ -144,7 +146,7 @@ const SignUpForm = () => {
                   type="text"
                   className={cn(
                     inputStyle,
-                    errors.confirmPassword ? "border-red-500" : "",
+                    errors.companyCode ? "border-red-500" : "",
                   )}
                 ></Input>
                 <FieldError className="text-sm font-bold">
@@ -159,7 +161,7 @@ const SignUpForm = () => {
                   type="text"
                   className={cn(
                     inputStyle,
-                    errors.confirmPassword ? "border-red-500" : "",
+                    errors.companyName ? "border-red-500" : "",
                   )}
                 ></Input>
                 <FieldError className="text-sm font-bold">
@@ -171,7 +173,7 @@ const SignUpForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="border p-2 rounded-md bg-[#1A3021] text-white"
+            className="border p-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition"
           >
             {loading ? "Creating account..." : "Sign Up"}
           </button>
