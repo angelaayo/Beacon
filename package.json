@@ -6,7 +6,8 @@
     "dev": "tsx server.ts",
     "build": "next build",
     "start": "cross-env NODE_ENV=production tsx server.ts",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.5.7",
