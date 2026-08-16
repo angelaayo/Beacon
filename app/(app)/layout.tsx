@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <AppSideBar />
       </div>
       <NewIncidentFAB />
-      <div className="flex min-h-screen flex-1 flex-col gap-5 bg-[#F9F9F8]">
+      <div className="flex min-h-screen flex-1 flex-col gap-5 bg-muted">
         <Header />
         <main className="flex-1 px-4">
           <div className="hidden md:block">

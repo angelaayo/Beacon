@@ -29,10 +29,7 @@ export async function DELETE(
   }
 
   await deleteAssignment(incidentId, userId);
-  await createEvent(
-    incidentId,
-    user.id,
-    "UNASSIGNED",
-    `removed an assignment`,
-  );
+  await createEvent(incidentId, user.id, "UNASSIGNED", `removed an assignment`);
+
+  return Response.json({ success: true });
 }

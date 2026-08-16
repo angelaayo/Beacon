@@ -138,6 +138,7 @@ enum IncidentEventType{
   USER_ASSIGNED
   RESOLVED
   ALERT_TRIGGERED
+  UNASSIGNED
 }
 
 model IncidentNotes{
