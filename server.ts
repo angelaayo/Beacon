@@ -40,6 +40,13 @@ app.prepare().then(() => {
         socket.to(`incidents:${incidentId}`).emit("docUpdate", update);
       },
     );
+
+    socket.on(
+      "awarenessUpdate",
+      ({ incidentId, states }: { incidentId: string; states: unknown[] }) => {
+        socket.to(`incidents:${incidentId}`).emit("awarenessUpdate", states);
+      },
+    );
   });
 
   const port = process.env.PORT || 3000;
